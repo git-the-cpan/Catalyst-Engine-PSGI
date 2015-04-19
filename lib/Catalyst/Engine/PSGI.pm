@@ -2,7 +2,7 @@ package Catalyst::Engine::PSGI;
 
 use strict;
 use 5.008_001;
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 use Moose;
 extends 'Catalyst::Engine';
@@ -194,7 +194,6 @@ sub run {
 sub _escape {
     local $_ = shift;
     s/(\r?\n)+/ /g;
-    s/ +/ /g;
     return $_;
 }
 
@@ -210,6 +209,10 @@ __END__
 =head1 NAME
 
 Catalyst::Engine::PSGI - PSGI engine for Catalyst
+
+=head1 WARNINGS
+
+B<Catalyst 5.9000 or later has a built-in PSGI support and this module is deprecated.>
 
 =head1 SYNOPSIS
 

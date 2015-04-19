@@ -1,27 +1,67 @@
-This is Perl module Catalyst::Engine::PSGI.
+NAME
 
-INSTALLATION
+    Catalyst::Engine::PSGI - PSGI engine for Catalyst
 
-Catalyst::Engine::PSGI installation is straightforward. If your CPAN shell is set up,
-you should just be able to do
+WARNINGS
 
-    % cpan Catalyst::Engine::PSGI
+    Catalyst 5.9000 or later has a built-in PSGI support and this module is
+    deprecated.
 
-Download it, unpack it, then build it as per the usual:
+SYNOPSIS
 
-    % perl Makefile.PL
-    % make && make test
+      # app.psgi
+      use strict;
+      use MyApp;
+    
+      MyApp->setup_engine('PSGI');
+      my $app = sub { MyApp->run(@_) };
 
-Then install it:
+DESCRIPTION
 
-    % make install
+    Catalyst::Engine::PSGI is a Catalyst Engine that adapts Catalyst into
+    the PSGI gateway protocol.
 
-DOCUMENTATION
+COMPATIBILITY
 
-Catalyst::Engine::PSGI documentation is available as in POD. So you can do:
+      * Currently this engine works with Catalyst 5.8 (Catamoose) or newer.
 
-    % perldoc Catalyst::Engine::PSGI
+      * Your application is supposed to work with any PSGI servers without
+      any code modifications, but if your application uses $c->res->write
+      to do streaming write, this engine will buffer the ouput until your
+      app finishes.
 
-to read the documentation online with your favorite pager.
+      To do real streaming with this engine, you should implement an
+      IO::Handle-like object that responds to getline method that returns
+      chunk or undef when done, and set that object to $c->res->body.
 
-Tatsuhiko Miyagawa
+      Alternatively, it is possible to set the body to a code reference,
+      which will be used to stream content as documented in the PSGI spec.
+
+      * When your application runs behind the frontend proxy like nginx or
+      lighttpd, this Catalyst engine doesn't automatically recognize the
+      incoming headers like X-Forwarded-For, because respecting these
+      headers by default causes a potential security issue.
+
+      You have to enable Plack::Middleware::ReverseProxy or
+      Plack::Middleware::ForwardedHeaders to automatically promote those
+      forwarded headers into REMOTE_ADDR hence IP address of the request.
+
+      ReverseProxy middleware is pretty simple and has no configuration
+      while ForwardedHeaders allows you to configure which upstream host to
+      trust, etc.
+
+AUTHOR
+
+    Tatsuhiko Miyagawa <miyagawa@bulknews.net>
+
+    Most of the code is taken and modified from Catalyst::Engine::CGI.
+
+LICENSE
+
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+SEE ALSO
+
+    Catalyst::Engine PSGI Plack
+
